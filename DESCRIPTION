@@ -4,6 +4,7 @@ Title: Process and georeference raw NSIDC data
 Version: 1.0
 Date: 2014-08-12
 Author: Koen Hufkens
+Depends: raster,rgdal,lubridate,RCurl
 Maintainer: Koen Hufkens <koen.hufkens@gmail.com>
 Description: The functions in the package composite the daily NSIDC snow and ice data into stacked geotiff files which are smaller and easier to process than the original raw ascii files. Other functions are also provided to calculate derived products such as the snow free or snow covered period.
 License: MIT

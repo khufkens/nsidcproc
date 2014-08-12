@@ -28,7 +28,12 @@ if geotiff = T then the data will be written to a geotiff, if geotiff=F the data
 
 The IMS data is provided as daily files which are cumbersome to download separately for all years. Instead I provide a wrapper script which automatically downloads and combines all daily snow cover data in a multi layer geotiff.
 
-Just run the combine_IMS_data.r script (adjusting the destination paths for data storage and the georeferencing function).
+Just run the combine_IMS_data function
+
+	combine_IMS_data(resolution=24,output_dir="~")
+
+Where the 'resolution' is the resolution of the IMS data product (24 or 4 km) respectively and 'output_dir' the location where you want to store the processed data.
+
 
 ## Notes
 

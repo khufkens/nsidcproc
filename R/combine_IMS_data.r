@@ -7,9 +7,6 @@ combine_IMS_data <- function(resolution=24,output_dir="~"){
   require(RCurl)
   require(lubridate)  # to detect leap years
   
-  # source additional functions
-  source(paste(output_dir,"/georeference_IMS_snow_data.r",sep="")) # path to the IMS georeferencing routine
-  
   # set location of your data
   setwd(output_dir) # path to the location where you want to save the data
   

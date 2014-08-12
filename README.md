@@ -1,14 +1,14 @@
-# IMS / CMC snow cover and depth composites
+# NSIDC IMS / CMC snow cover and depth composites
 
-Compositing R code to georeference and merge IMS and CMC daily snow (depth) products (24km resolution) into layered geotiffs.
+National Snow and Ice Data Center (NSIDC) processing software. Composites raw NSIDC data files into georeferenced (yearly) stacked geotiffs for easy processing. Additional functions are provided to process this data to extract derived data products such as day of first snow melt and the dates spanning the longest snow free period.
 
 ## Installation
 
 clone the project to your home computer using the following command (with git installed)
 
-	git clone https://khufkens@bitbucket.org/khufkens/ims-cmc-snow-data-composites.git
+	git clone https://khufkens@bitbucket.org/khufkens/nsidcproc.git
 
-alternatively, download the project using [this link](https://bitbucket.org/khufkens/ims-cmc-snow-data-composites/get/master.zip).
+alternatively, download the project using [this link](https://bitbucket.org/khufkens/nsidcproc/get/master.zip).
 	
 ## Use
 

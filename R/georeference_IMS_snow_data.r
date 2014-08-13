@@ -3,11 +3,11 @@ georeference_IMS_snow_data <- function(filename="",geotiff=T){
   # you need the raster library to georeference
   # the image matrix
   require(raster)
-  require(multicore) # to speed up unfolding of the data
+  require(parallel) # to speed up unfolding of the data
                     # especially when dealing with the 4km data
   
   # set the number of cores (max cores - 1)
-  cores = multicore:::detectCores() - 1
+  cores = parallel:::detectCores() - 1
   
   # Scan for the line on which "Dim Units"
   # occurs for the second time, I'll scan for the

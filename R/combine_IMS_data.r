@@ -44,7 +44,7 @@ combine_IMS_data <- function(resolution=24,output_dir="~"){
     extent(r) = e
     r[] = NA # fill with NA values
     
-    start_year = 2004
+    start_year = 2005
   }
   
   # process all years up until today
@@ -145,6 +145,10 @@ combine_IMS_data <- function(resolution=24,output_dir="~"){
       filename = paste("IMS_4k_daily_snow_cover_",i,".tif",sep="")
     }
     writeRaster(rb,filename,overwrite=TRUE,options=c("COMPRESS=DEFLATE"))
+    
+    # clean up buffer space
+    removeTmpFiles()
+    gc()
     
     # clean system dir
     system("rm *.asc")

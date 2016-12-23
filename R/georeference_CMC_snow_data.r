@@ -22,10 +22,6 @@ georeference_CMC_snow_data <- function(filename="",geotiff=F){
   no_extension = sub("^([^.]*).*", "\\1", no_path) 
   year = as.numeric(unlist(strsplit(no_extension,split="_"))[3])
   
-  # remove the breaks in the data file due to insertion of
-  # dates
-  system(paste("sed '/",year,"/d' ",filename ," > tmp.txt",sep=""))
-  
   # read the data using scan and force it to use a double format
   # this command returns a vector
   # adjust the length according to leap years
@@ -38,9 +34,16 @@ georeference_CMC_snow_data <- function(filename="",geotiff=F){
       nr_layers=365
     }
   }
-  data_vector = scan('tmp.txt',skip=0,nlines=706*nr_layers,what=double())
+
+  # read in raw text CMC data
+  data_vector = scan(filename,skip=0,nlines=(706*nr_layers)+nr_layers,what=character())
   
-  system("rm tmp.txt")
+  # remove the part that messes with stuff (yearly delineators)
+  data_vector <- data_vector[-grep(toString(year),data_vector)]
+  
+  # convert to numeric
+  data_vector = as.numeric(data_vector)
+  
   # convert the vector into a 3D array, using aperm to sort byrow
   # this is similar to read.table(...,byrow=T) for tables
   data_array = aperm(array(data_vector,c(706,706,nr_layers)),c(2,1,3))

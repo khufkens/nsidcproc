@@ -14,6 +14,13 @@ library(phenor)
 
 ## Use
 
+Load the library using
+
+```R
+library(NSIDCproc)
+```
+
+
 ### CMC data
 
 Download all CMC data zipped ascii files from the [NSIDC website](ftp://sidads.colorado.edu/pub/DATASETS/nsidc0447_CMC_snow_depth_v01/). These are the files called ps_cmc_sdepth_analysis_*_ascii.zip.

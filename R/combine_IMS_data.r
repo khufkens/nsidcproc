@@ -1,6 +1,9 @@
 # convert and combine all IMS snow cover data
 # in yearly stacks
-combine_IMS_data <- function(resolution=24,output_dir="~"){
+combine_IMS_data <- function(resolution=24,
+                             start_year = 1997,
+                             end_year = 2017,
+                             output_dir="~"){
   
   # library requirements
   require(raster)
@@ -25,10 +28,12 @@ combine_IMS_data <- function(resolution=24,output_dir="~"){
     projection(r) = proj
     extent(r) = e
     r[] = NA # fill with NA values
-    
-    start_year = 1997
   
-  } else{
+  } else {
+    
+    if (start_year < 2005){
+      stop('start year should be >= 2005 for the 4km product!')
+    }
     
     # the projection as used (polar stereographic (north))
     proj = CRS("+proj=stere +lat_0=90 +lat_ts=60 +lon_0=-80 +k=1 +x_0=0 +y_0=0 +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs")
@@ -48,7 +53,7 @@ combine_IMS_data <- function(resolution=24,output_dir="~"){
   }
   
   # process all years up until today
-  for (i in start_year:2013){
+  for (i in start_year:end_year){
     
     # check if it is a leap year, set number of layers accordingly
     if (leap_year(i) == TRUE){
@@ -58,10 +63,14 @@ combine_IMS_data <- function(resolution=24,output_dir="~"){
     }
   
     if (resolution == 24 ){
-      files = getURL(paste("ftp://sidads.colorado.edu/pub/DATASETS/NOAA/G02156/24km/",i,"/",sep=""),ftp.use.epsv=TRUE,dirlistonly = TRUE)
+      files = getURL(paste("ftp://sidads.colorado.edu/pub/DATASETS/NOAA/G02156/24km/",i,"/",sep=""),
+                     ftp.use.epsv = TRUE,
+                     dirlistonly = TRUE)
       files = unlist(strsplit(files,split="\n"))
     } else {
-      files = getURL(paste("ftp://sidads.colorado.edu/pub/DATASETS/NOAA/G02156/4km/",i,"/",sep=""),ftp.use.epsv=TRUE,dirlistonly = TRUE)
+      files = getURL(paste("ftp://sidads.colorado.edu/pub/DATASETS/NOAA/G02156/4km/",i,"/",sep=""),
+                     ftp.use.epsv = TRUE,
+                     dirlistonly = TRUE)
       files = unlist(strsplit(files,split="\n"))
     }
     
@@ -70,7 +79,7 @@ combine_IMS_data <- function(resolution=24,output_dir="~"){
     files = files[loc]
     
     # get the filename withouth an extension
-    no_extension = unlist(lapply(strsplit(files,split='\\.'),"[[",1))
+    no_extension = tools::file_path_sans_ext(files)
     
     # extract the doy value form the filename
     doy = as.numeric(substr(no_extension,8,10))
@@ -102,29 +111,31 @@ combine_IMS_data <- function(resolution=24,output_dir="~"){
         # print feedback
         cat(paste("Adding data for doy ",j, " of year ", i,"\n"))
         
-        if ( !file.exists(paste(no_extension[file_loc],".asc",sep="")) ){
+        if ( !file.exists(sprintf("%s/%s",output_dir,no_extension[file_loc]))){
           if (resolution == 24){
             #download the file
             download.file(url=paste("ftp://sidads.colorado.edu/pub/DATASETS/NOAA/G02156/24km/",i,"/",files[file_loc],sep=""),
-                          destfile=files[file_loc],
+                          destfile=sprintf("%s/%s",output_dir,files[file_loc]),
                           method="curl",
                           cacheOK=TRUE,
                           quiet=TRUE)
           } else {
             #download the file
             download.file(url=paste("ftp://sidads.colorado.edu/pub/DATASETS/NOAA/G02156/4km/",i,"/",files[file_loc],sep=""),
-                          destfile=files[file_loc],
+                          destfile=sprintf("%s/%s",output_dir,files[file_loc]),
                           method="curl",
                           cacheOK=TRUE,
                           quiet=TRUE)
           }
           
+          print("file exists")
           #unzip the file
-          system(paste("gunzip -f ", files[file_loc],sep=""))
+          system(sprintf("gunzip -f %s/%s",output_dir,files[file_loc]))
         }
         
         #convert to a raster file
-        georeference_IMS_snow_data(paste(no_extension[file_loc],".asc",sep=""),geotiff=T)
+        georeference_IMS_snow_data(sprintf('%s/%s',output_dir,no_extension[file_loc]),
+                                   geotiff=T)
         
       }
     }

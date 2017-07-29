@@ -128,7 +128,6 @@ combine_IMS_data <- function(resolution=24,
                           quiet=TRUE)
           }
           
-          print("file exists")
           #unzip the file
           system(sprintf("gunzip -f %s/%s",output_dir,files[file_loc]))
         }

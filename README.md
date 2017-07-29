@@ -4,12 +4,14 @@ National Snow and Ice Data Center (NSIDC) processing software. Composites raw NS
 
 ## Installation
 
-clone the project to your home computer using the following command (with git installed)
+Install the package by using the devtools github functionality.
 
-	git clone https://khufkens@bitbucket.org/khufkens/nsidcproc.git
+```R
+if(!require(devtools)){install.package(devtools)}
+devtools::install_github("khufkens/nsidcproc")
+library(phenor)
+```
 
-alternatively, download the project using [this link](https://bitbucket.org/khufkens/nsidcproc/get/master.zip).
-	
 ## Use
 
 ### CMC data

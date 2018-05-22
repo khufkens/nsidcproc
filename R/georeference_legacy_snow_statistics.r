@@ -1,5 +1,16 @@
-# convert and georeference legacy snow statistics data
-georeference_legacy_snow_statistics <- function(output_dir="~"){
+#' download and geo-reference legacy (ASCII) NSIDC data
+#' 
+#' @param output_dir where to store the final dataset (default = tempdir())
+#' @keywords snow, ice, temporal data, remote sensing
+#' @export
+#' @examples
+#'
+#' \dontrun{
+#' # download the data
+#' georeference_legacy_snow_statistics()
+#' }
+
+georeference_legacy_snow_statistics <- function(output_dir=tempdir()){
   
   # the projection we will use (polar stereographic (north))
   # using the CMC/IMS projection parameters

@@ -1,9 +1,21 @@
-# cmc conversion function
-georeference_CMC_snow_data <- function(filename="",geotiff=F){
-  
-  # load required packaages
-  require(raster)     # GIS functionality
-  require(lubridate)  # to detect leap years
+#' georeference a CMC NSIDC data file
+#' 
+#' Converted files are stored in the same directory as the initial files.
+#' 
+#' @param filename file to process
+#' @param geotiff bolean \code{TRUE} or \code{FALSE} (default = \code{FALSE})
+#' @keywords snow, ice, temporal data, remote sensing
+#' @export
+#' @examples
+#'
+#' \dontrun{
+#' # download the default range 1997 - 2017
+#' # and store in tempdir()
+#' georeference_CMC_snow_data()
+#' }
+
+georeference_CMC_snow_data <- function(filename="",
+                                       geotiff = FALSE){
   
   # the projection as used (polar stereographic (north))
   # latitude at natural origin is 60 degrees

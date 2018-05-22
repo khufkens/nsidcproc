@@ -1,14 +1,24 @@
-# convert and combine all IMS snow cover data
-# in yearly stacks
-combine_IMS_data <- function(resolution=24,
+#' download and combine NSIDC IMS data
+#' 
+#' @param resolution numeric spatial resolution to use in processing (4, 24)
+#' (default = 24)
+#' @param start_year start year
+#' @param end_year end year
+#' @param output_dir where to store the final dataset (default = tempdir())
+#' @keywords snow, ice, temporal data, remote sensing
+#' @export
+#' @examples
+#'
+#' \dontrun{
+#' # download IMS scnow data for the default range 1997 - 2017
+#' # and store in tempdir()
+#' combine_IMS_data()
+#' }
+
+combine_IMS_data <- function(resolution = 24,
                              start_year = 1997,
                              end_year = 2017,
-                             output_dir="~"){
-  
-  # library requirements
-  require(raster)
-  require(RCurl)
-  require(lubridate)  # to detect leap years
+                             output_dir=tempdir()){
   
   # set location of your data
   setwd(output_dir) # path to the location where you want to save the data
@@ -16,17 +26,17 @@ combine_IMS_data <- function(resolution=24,
   if (resolution == 24){
     
     # the projection as used (polar stereographic (north))
-    proj = CRS("+proj=stere +lat_0=90 +lat_ts=60 +lon_0=10 +k=1 +x_0=0 +y_0=0 +a=6371200 +b=6371200 +units=m +no_defs")
+    proj = sp::CRS("+proj=stere +lat_0=90 +lat_ts=60 +lon_0=10 +k=1 +x_0=0 +y_0=0 +a=6371200 +b=6371200 +units=m +no_defs")
     
     # set extent based upon documentation info x / y resolution top left coordinate
-    e = extent(-12126597,12126840,-12126597,12126840)
+    e = raster::extent(-12126597,12126840,-12126597,12126840)
     
     # create empty raster brick layer
-    r = raster(ncols=1024,nrows=1024)
+    r = raster::raster(ncols=1024,nrows=1024)
     
     # set projection and extent
-    projection(r) = proj
-    extent(r) = e
+    raster::projection(r) = proj
+    raster::extent(r) = e
     r[] = NA # fill with NA values
   
   } else {
@@ -36,17 +46,17 @@ combine_IMS_data <- function(resolution=24,
     }
     
     # the projection as used (polar stereographic (north))
-    proj = CRS("+proj=stere +lat_0=90 +lat_ts=60 +lon_0=-80 +k=1 +x_0=0 +y_0=0 +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs")
+    proj = sp::CRS("+proj=stere +lat_0=90 +lat_ts=60 +lon_0=-80 +k=1 +x_0=0 +y_0=0 +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs")
     
     # set extent based upon documentation info x / y resolution top left coordinate
-    e = extent(-12288000,12288000,-12288000,12288000)
+    e = raster::extent(-12288000,12288000,-12288000,12288000)
     
     # create empty raster brick layer
-    r = raster(ncols=6144,nrows=6144)
+    r = raster::raster(ncols=6144,nrows=6144)
     
     # set projection and extent
-    projection(r) = proj
-    extent(r) = e
+    raster::projection(r) = proj
+    raster::extent(r) = e
     r[] = NA # fill with NA values
     
     start_year = 2005
@@ -55,20 +65,21 @@ combine_IMS_data <- function(resolution=24,
   # process all years up until today
   for (i in start_year:end_year){
     
-    # check if it is a leap year, set number of layers accordingly
-    if (leap_year(i) == TRUE){
+    # check if it is a leap year
+    # set number of layers accordingly
+    if (lubridate::leap_year(i) == TRUE){
       nr_layers=366
     }else{
       nr_layers=365
     }
   
     if (resolution == 24 ){
-      files = getURL(paste("ftp://sidads.colorado.edu/pub/DATASETS/NOAA/G02156/24km/",i,"/",sep=""),
+      files = RCurl::getURL(paste("ftp://sidads.colorado.edu/pub/DATASETS/NOAA/G02156/24km/",i,"/",sep=""),
                      ftp.use.epsv = TRUE,
                      dirlistonly = TRUE)
       files = unlist(strsplit(files,split="\n"))
     } else {
-      files = getURL(paste("ftp://sidads.colorado.edu/pub/DATASETS/NOAA/G02156/4km/",i,"/",sep=""),
+      files = RCurl::getURL(paste("ftp://sidads.colorado.edu/pub/DATASETS/NOAA/G02156/4km/",i,"/",sep=""),
                      ftp.use.epsv = TRUE,
                      dirlistonly = TRUE)
       files = unlist(strsplit(files,split="\n"))
@@ -99,10 +110,10 @@ combine_IMS_data <- function(resolution=24,
         
         if (resolution == 24){
           # write empty file
-          writeRaster(r,paste("ims",i,sprintf("%03d", j),"_24km.tif",sep=""),overwrite=T,options=("COMPRESS=DEFLATE"))
+          raster::writeRaster(r,paste("ims",i,sprintf("%03d", j),"_24km.tif",sep=""),overwrite=T,options=("COMPRESS=DEFLATE"))
         } else {
           # write empty file
-          writeRaster(r,paste("ims",i,sprintf("%03d", j),"_4km.tif",sep=""),overwrite=T,options=("COMPRESS=DEFLATE"))
+          raster::writeRaster(r,paste("ims",i,sprintf("%03d", j),"_4km.tif",sep=""),overwrite=T,options=("COMPRESS=DEFLATE"))
         }
         
         
@@ -114,14 +125,14 @@ combine_IMS_data <- function(resolution=24,
         if ( !file.exists(sprintf("%s/%s",output_dir,no_extension[file_loc]))){
           if (resolution == 24){
             #download the file
-            download.file(url=paste("ftp://sidads.colorado.edu/pub/DATASETS/NOAA/G02156/24km/",i,"/",files[file_loc],sep=""),
+            utils::download.file(url=paste("ftp://sidads.colorado.edu/pub/DATASETS/NOAA/G02156/24km/",i,"/",files[file_loc],sep=""),
                           destfile=sprintf("%s/%s",output_dir,files[file_loc]),
                           method="curl",
                           cacheOK=TRUE,
                           quiet=TRUE)
           } else {
             #download the file
-            download.file(url=paste("ftp://sidads.colorado.edu/pub/DATASETS/NOAA/G02156/4km/",i,"/",files[file_loc],sep=""),
+            utils::download.file(url=paste("ftp://sidads.colorado.edu/pub/DATASETS/NOAA/G02156/4km/",i,"/",files[file_loc],sep=""),
                           destfile=sprintf("%s/%s",output_dir,files[file_loc]),
                           method="curl",
                           cacheOK=TRUE,
@@ -154,7 +165,7 @@ combine_IMS_data <- function(resolution=24,
     } else {
       filename = paste("IMS_4k_daily_snow_cover_",i,".tif",sep="")
     }
-    writeRaster(rb,filename,overwrite=TRUE,options=c("COMPRESS=DEFLATE"))
+    raster::writeRaster(rb,filename,overwrite=TRUE,options=c("COMPRESS=DEFLATE"))
     
     # clean up buffer space
     removeTmpFiles()

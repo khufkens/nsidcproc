@@ -9,7 +9,6 @@ Install the package by using the devtools github functionality.
 ```R
 if(!require(devtools)){install.package(devtools)}
 devtools::install_github("khufkens/nsidcproc")
-library(phenor)
 ```
 
 ## Use

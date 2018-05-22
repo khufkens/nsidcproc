@@ -15,7 +15,7 @@ Imports:
     rgdal,
     lubridate,
     utils,
-    RCurl,
+    httr,
     parallel
 License: AGPL-3
 LazyData: true

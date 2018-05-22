@@ -124,19 +124,27 @@ combine_IMS_data <- function(resolution = 24,
         
         if ( !file.exists(sprintf("%s/%s",output_dir,no_extension[file_loc]))){
           if (resolution == 24){
-            #download the file
-            utils::download.file(url=paste("ftp://sidads.colorado.edu/pub/DATASETS/NOAA/G02156/24km/",i,"/",files[file_loc],sep=""),
-                          destfile=sprintf("%s/%s",output_dir,files[file_loc]),
-                          method="curl",
-                          cacheOK=TRUE,
-                          quiet=TRUE)
+            
+            # url / out path
+            url = paste0("ftp://sidads.colorado.edu/pub/DATASETS/NOAA/G02156/24km/",i,"/",files[file_loc])
+            out_file = sprintf("%s/%s",output_dir,files[file_loc])
+            
+            # try to download the data
+            error = try(httr::GET(url = url,
+                                  httr::write_disk(path = out_file,
+                                                   overwrite = TRUE)))
+            
           } else {
-            #download the file
-            utils::download.file(url=paste("ftp://sidads.colorado.edu/pub/DATASETS/NOAA/G02156/4km/",i,"/",files[file_loc],sep=""),
-                          destfile=sprintf("%s/%s",output_dir,files[file_loc]),
-                          method="curl",
-                          cacheOK=TRUE,
-                          quiet=TRUE)
+            
+            # url / out path
+            url=paste0("ftp://sidads.colorado.edu/pub/DATASETS/NOAA/G02156/4km/",i,"/",files[file_loc])
+            out_file = sprintf("%s/%s",output_dir,files[file_loc])
+            
+            # try to download the data
+            error = try(httr::GET(url = url,
+                                  httr::write_disk(path = out_file,
+                                                   overwrite = TRUE)))
+            
           }
           
           #unzip the file
